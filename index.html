@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FontLoader Test</title>
+  <style>
+    body { margin: 0; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <script type="module">
+    import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js';
+    import { FontLoader } from './src/FontLoader.js';
+    import { createParticles, setupCameraAndControls } from './src/urmom.js';
+
+    const scene = new THREE.Scene();
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Set up camera and controls
+    const camera = setupCameraAndControls(scene, renderer);
+
+    // Load and add font
+    const loader = new FontLoader();
+    loader.load('fonts/helvetiker_bold.typeface.json', (font) => {
+      console.log('Font loaded:', font);
+
+      const geometry = new THREE.TextGeometry('i.love.fried.rice', {
+        font: font,
+        size: 10,
+        height: 1,
+        curveSegments: 12
+      });
+
+      const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+      const textMesh = new THREE.Mesh(geometry, material);
+      scene.add(textMesh);
+
+      camera.position.z = 50;
+
+      function animate() {
+        requestAnimationFrame(animate);
+        textMesh.rotation.y += 0.01;
+        renderer.render(scene, camera);
+      }
+      animate();
+
+    }, undefined, (error) => {
+      console.error('Error loading font:', error);
+    });
+
+    // Create particles
+    createParticles(scene);
+
+  </script>
+</body>
+</html>
+
